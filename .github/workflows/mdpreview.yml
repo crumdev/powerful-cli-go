@@ -10,6 +10,8 @@ on:
 
 jobs:
   buildAndTest:
+    env:
+      srcPath: "./mdpreview/src/"
     runs-on: ubuntu-latest
 
     steps:
@@ -20,6 +22,9 @@ jobs:
         uses: actions/setup-go@v5.0.0
         with:
           go-version: '1.20'
+          go-version-file: ${{env.srcPath}}/go.mod
+          cache-dependency-path: ${{env.srcPath}}/go.sum
+          
       
       - name: Install dependencies
         working-directory: ./mdpreview/src/
