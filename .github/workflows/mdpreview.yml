@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  buildAndTest:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,9 +20,21 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.20'
-
-      - name: Build
-        run: go build -C ./mdpreview/src/ -o bin/mdpreview && rm -rf bin/mdpreview
+      
+      - name: Install dependencies
+        working-directory: ./mdpreview/src/
+        run: |
+          go get -v -t -C ./mdpreview/src/...
+          go mod tidy
+          go mod vendor
+          go install github.com/becheran/go-testreport@latest
 
       - name: Test
-        run: go test -C mdpreview/src
+        working-directory: ./mdpreview/src/
+        run: go test -v -coverprofile=coverage.out -covermode=atomic -json ./... | go-testreport $GITHUB_STEP_SUMMARY
+      
+      - name: Build
+        working-directory: ./mdpreview/src/
+        run: go build -C ./mdpreview/src/ -o bin/mdpreview && rm -rf bin/mdpreview
+      
+      
