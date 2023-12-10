@@ -24,7 +24,6 @@ jobs:
       - name: Install dependencies
         working-directory: ./mdpreview/src/
         run: |
-          go get -v -t -d ./...
           go mod tidy
           go mod vendor
           go install github.com/becheran/go-testreport@latest
