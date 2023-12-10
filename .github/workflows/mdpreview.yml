@@ -34,6 +34,6 @@ jobs:
       
       - name: Build
         working-directory: ./mdpreview/src/
-        run: go build -C ./mdpreview/src/ -o bin/mdpreview && rm -rf bin/mdpreview
+        run: go build -o bin/mdpreview && rm -rf bin/mdpreview
       
       
