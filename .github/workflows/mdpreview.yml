@@ -25,18 +25,18 @@ jobs:
           cache-dependency-path: ${{env.srcPath}}/go.sum
           
       - name: Install dependencies
-        working-directory: ./mdpreview/src/
+        working-directory: ${{env.srcPath}}
         run: |
           go mod tidy
           go mod vendor
           go install github.com/becheran/go-testreport@latest
 
       - name: Test
-        working-directory: ./mdpreview/src/
+        working-directory: ${{env.srcPath}}
         run: go test -v -coverprofile=coverage.out -covermode=atomic -json ./... | go-testreport $GITHUB_STEP_SUMMARY
       
       - name: Build
-        working-directory: ./mdpreview/src/
+        working-directory: ${{env.srcPath}}
         run: go build -o bin/mdpreview && rm -rf bin/mdpreview
       
       
