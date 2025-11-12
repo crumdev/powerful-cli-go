@@ -9,6 +9,7 @@ import (
 )
 
 func TestParseContent(t *testing.T) {
+	
 	input := []byte("# Hello, World!\n\n## Another heading\n\n  - List item 1\n  - List item 2\n")
 
 	var expectedBuffer bytes.Buffer
@@ -26,6 +27,7 @@ func TestParseContent(t *testing.T) {
 
 func TestRun(t *testing.T) {
 	// Create a temporary file with markdown content
+	var mockStdOut bytes.Buffer
 	tmpFile, err := os.CreateTemp("", "mdpreview_*.md")
 	outName := fmt.Sprintf("%s.html", filepath.Base(tmpFile.Name()))
 	if err != nil {
@@ -39,8 +41,7 @@ func TestRun(t *testing.T) {
 	}
 
 	// Call the run function with the temporary file
-	err = run(tmpFile.Name())
-	if err != nil {
+	if err = run(tmpFile.Name(), "./", &mockStdOut); err != nil {
 		t.Errorf("Failed to run: %s", err)
 	}
 
