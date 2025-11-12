@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -30,6 +31,7 @@ const (
 func main() {
 	// Parse flags
 	filename := flag.String("file", "", "Markdown file to preview")
+	outdir := flag.String("outdir", "./", "Output path to directory to store html. Defaults to current directory")
 	flag.Parse()
 
 	// If user did not provide input file, show usage
@@ -38,13 +40,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := run(*filename); err != nil {
+	if err := run(*filename, *outdir, os.Stdout); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func run(filename string) error {
+func run(filename string, outdir string, out io.Writer) error {
 	// Read all the data from the input file and check for errors
 	input, err := os.ReadFile(filename)
 	if err != nil {
@@ -53,7 +55,18 @@ func run(filename string) error {
 
 	htmlData := parseContent(input)
 
-	outName := fmt.Sprintf("%s.html", filepath.Base(filename))
+	// Create temp file and check for errors
+	temp, err := os.CreateTemp("","mdp*.html")
+	if err != nil {
+		return err
+	}
+	if err := temp.Close(); err != nil {
+		return err
+	}
+
+	outName := filepath.Join(outdir, filepath.Base(filename)+".html")
+	os.Rename(temp.Name(), outName)
+
 	fmt.Println(outName)
 	return saveHTML(outName, htmlData)
 }
